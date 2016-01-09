@@ -1,0 +1,18 @@
+#
+# generated on 2016/01/09 05:38:49
+#
+# --table-start--
+dataClass=ro.lupii.assignment.data.User
+tableName=user
+# --table-fields-start--
+# --field-start--
+fieldName=id
+generatedId=true
+# --field-end--
+# --field-start--
+fieldName=username
+unique=true
+# --field-end--
+# --table-fields-end--
+# --table-end--
+#################################

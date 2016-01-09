@@ -1,0 +1,17 @@
+<resources>
+    <string name="title_activity_login">Sign in</string>
+
+    <!-- Strings related to login -->
+    <string name="prompt_password">Enter passowrd</string>
+    <string name="prompt_confirm_password">Reenter passowrd</string>
+    <string name="prompt_user">Enter user name</string>
+    <string name="action_sign_in">Sign in</string>
+
+    <string name="error_invalid_email">Invalid user name</string>
+    <string name="error_failed_login">Invalid auth information. Please check it again and retry.</string>
+    <string name="mandatory_field">The field is mandatory</string>
+    <string name="same_password">The passwords entered in the two fields must be the same</string>
+    <string name="failed_login">The login has failed</string>
+    <string name="new_account_question">Don\'t have an account?</string>
+    <string name="new_account">Create an account</string>
+</resources>
