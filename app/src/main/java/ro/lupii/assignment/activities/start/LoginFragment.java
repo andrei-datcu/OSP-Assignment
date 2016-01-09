@@ -18,10 +18,15 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 import ro.lupii.assignment.R;
+import ro.lupii.assignment.data.OSPSocket;
 import ro.lupii.assignment.data.User;
 
 
@@ -70,6 +75,7 @@ public class LoginFragment extends Fragment {
         mUsernameView = (EditText) v.findViewById(R.id.username);
         mPasswordView = (EditText) v.findViewById(R.id.password);
         mConfirmPassword = (EditText) v.findViewById(R.id.confirm_password);
+
         final Button mEmailSignInButton = (Button) v.findViewById(R.id.email_sign_in_button);
         mEmailSignInButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -220,18 +226,58 @@ public class LoginFragment extends Fragment {
         private List<User> users;
         private Exception e;
 
+        private OSPSocket sock=null;
+
         UserLoginTask(String email, String password) {
             mEmail = email;
             mPassword = password;
             users = new ArrayList<>();
+
+            try {
+                sock = new OSPSocket();
+            } catch (IOException e1) {
+                this.e = e;
+            }
         }
 
         @Override
         protected Boolean doInBackground(Void... params) {
+            JSONObject jobj = new JSONObject();
+            JSONArray usersArr;
+            String response;
+
             try {
                 //TODO(John) authentication logic here
                 // you may use createMode here to check if you create or you login
                 // also get all users list here
+                jobj.put("user", this.mEmail);
+                jobj.put("pass", this.mPassword);
+
+                if (createMode) {
+                    jobj.put("create", true);
+                }
+
+                this.sock.writeString(jobj.toString());
+                response = this.sock.readLine();
+
+                jobj = new JSONObject(response);
+
+                if ((Integer)jobj.get("response") != 0) {
+                    lastError = (String)jobj.get("message");
+                    return false;
+                }
+
+
+                users = new ArrayList<User>();
+
+                /* everything ok! get user list */
+                usersArr = jobj.getJSONArray("users");
+                for (int i=0; i < usersArr.length(); i++) {
+                    this.users.add(new User((String)usersArr.get(i)));
+                }
+
+
+
                 return true;
             } catch (Exception e) {
                 this.e = e;
