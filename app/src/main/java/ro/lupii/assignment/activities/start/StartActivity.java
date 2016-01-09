@@ -2,13 +2,16 @@ package ro.lupii.assignment.activities.start;
 
 import android.app.Fragment;
 import android.app.FragmentTransaction;
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import ro.lupii.assignment.R;
 import ro.lupii.assignment.data.User;
+import ro.lupii.assignment.activities.users.UserListActivity;
 
 public class StartActivity extends AppCompatActivity implements
         LoginFragment.OnFragmentInteractionListener {
@@ -17,6 +20,17 @@ public class StartActivity extends AppCompatActivity implements
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_start);
+
+        //TODO (Andrei) remove this shit
+        //ArrayList<User> users = new ArrayList<>();
+        //users.add(User.buildUser("andrei"));
+        //users.add(User.buildUser("john"));
+        //users.add(User.buildUser("marinela"));
+        //Intent i = new Intent(this, UserListActivity.class);
+        //i.putParcelableArrayListExtra(UserListActivity.KEY_USERLIST, users);
+        //startActivity(i);
+        //finish();
+        //shit ends here
 
         if (savedInstanceState == null) {
             showFragment(new LoginFragment(), true);
@@ -33,6 +47,10 @@ public class StartActivity extends AppCompatActivity implements
 
     @Override
     public void onLogin(List<User> allUsers) {
-        // TODO (Andrei) start new activity here showing all users
+        Intent i = new Intent(this, UserListActivity.class);
+        ArrayList<User> users = new ArrayList<>();
+        users.addAll(allUsers);
+        i.putParcelableArrayListExtra(UserListActivity.KEY_USERLIST, users);
+        startActivity(i);
     }
 }
