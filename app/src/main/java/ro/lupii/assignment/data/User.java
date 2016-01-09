@@ -25,6 +25,10 @@ public class User implements Parcelable{
         return id;
     }
 
+    public Boolean getFavorite() {
+        return favorite;
+    }
+
     public User() {
         //Empty constructor needed by ORMLITE
     }
