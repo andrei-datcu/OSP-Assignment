@@ -13,6 +13,7 @@ import ro.lupii.assignment.data.OSPSocket;
  * Created by andrei on 1/10/16.
  */
 public class SocketThread extends Thread {
+    private boolean terminate=false;
 
     public interface OnMessageArrivedListener {
         void onMessageArrived(String message);
@@ -29,12 +30,17 @@ public class SocketThread extends Thread {
     private OnMessageArrivedListener mOnMessageArrivedListener;
     private Exception raisedException = null;
 
+    final private int sockTimeout=100; /* millis */
+
     public SocketThread(OnMessageArrivedListener mOnMessageArrivedListener) {
         this.mOnMessageArrivedListener = mOnMessageArrivedListener;
     }
 
     private void createSocket() throws IOException{
         //TODO(John) Create socket here
+        this.socket = new OSPSocket();
+        this.socket.setSockTimeout(this.sockTimeout);
+
     }
 
     @Override
@@ -45,10 +51,15 @@ public class SocketThread extends Thread {
             raisedException = e;
             return;
         }
+
         try {
             for (; ; ) {
+                if (this.terminate == true)
+                    break;
+
                 try {
                     final String message = socket.readAll();
+
                     synchronized (mMessageWaitLock) {
                         if (mMessageWaitLock.somebodyWaiting) {
                             mMessageWaitLock.theActualMessage = message;
@@ -75,7 +86,23 @@ public class SocketThread extends Thread {
                 }
             }
         } finally {
-            //TODO (John) close socket here;
+            try {
+                this.socket.close();
+            } catch (IOException e) {
+                raisedException = e;
+                return;
+            }
+        }
+    }
+
+    public void closeThread() {
+        /* make sure thread stops */
+        this.terminate = true;
+        try {
+            this.socket.close();
+        } catch (IOException e) {
+            raisedException = e;
+            return;
         }
     }
 

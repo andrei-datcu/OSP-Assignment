@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.net.SocketException;
 
 import ro.lupii.assignment.R;
 
@@ -32,14 +33,16 @@ public class OSPSocket {
         InputStreamReader iSR;
         BufferedOutputStream bOS;
 
+        System.out.println("xxx");
         this.socket = new Socket(this.host, this.port);
+        System.out.println("xxx");
 
 
         iSR = new InputStreamReader(this.socket.getInputStream());
         this.br = new BufferedReader(iSR);
 
         bOS = new BufferedOutputStream(this.socket.getOutputStream());
-        this.pw = new PrintWriter(bOS, true);
+
     }
 
     public  String readAll() throws IOException {
@@ -55,6 +58,14 @@ public class OSPSocket {
     public void writeString(String s) {
         this.pw.write(s+'\0');
         this.pw.flush();
+    }
+
+    public void setSockTimeout(int timeout) throws SocketException {
+        this.socket.setSoTimeout(timeout);
+    }
+
+    public void close() throws IOException {
+        this.socket.close();
     }
 
 }

@@ -39,7 +39,13 @@ public class CommService extends Service implements SocketThread.OnMessageArrive
     @Override
     public void onCreate() {
         socketThread = new SocketThread(this);
-        socketThread.run();
+        socketThread.start();
+    }
+
+    @Override
+    public void onDestroy() {
+        socketThread.closeThread();
+        socketThread.interrupt();
     }
 
     public String login(String message) throws Exception {
