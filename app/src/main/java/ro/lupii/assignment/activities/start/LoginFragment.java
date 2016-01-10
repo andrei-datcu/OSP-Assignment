@@ -5,9 +5,13 @@ import android.animation.AnimatorListenerAdapter;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Fragment;
+import android.content.ComponentName;
 import android.content.Context;
+import android.content.Intent;
+import android.content.ServiceConnection;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -29,6 +33,7 @@ import java.util.List;
 import ro.lupii.assignment.R;
 import ro.lupii.assignment.data.OSPSocket;
 import ro.lupii.assignment.data.User;
+import ro.lupii.assignment.services.CommService;
 
 
 /**
@@ -56,6 +61,27 @@ public class LoginFragment extends Fragment {
     private boolean progressShowing = false;
     private String lastError = null;
     private boolean createMode = false;
+
+    private boolean mBound = false;
+    private CommService mService = null;
+
+    /** Defines callbacks for service binding, passed to bindService() */
+    private ServiceConnection mConnection = new ServiceConnection() {
+
+        @Override
+        public void onServiceConnected(ComponentName className,
+                                       IBinder service) {
+            // We've bound to LocalService, cast the IBinder and get LocalService instance
+            CommService.LocalBinder binder = (CommService.LocalBinder) service;
+            mService = binder.getService();
+            mBound = true;
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName arg0) {
+            mBound = false;
+        }
+    };
 
     public LoginFragment() {
         // Required empty public constructor
@@ -228,8 +254,6 @@ public class LoginFragment extends Fragment {
         private List<User> users;
         private Exception e;
 
-        private OSPSocket sock=null;
-
         UserLoginTask(String email, String password) {
             mEmail = email;
             mPassword = password;
@@ -246,7 +270,6 @@ public class LoginFragment extends Fragment {
                 //TODO(John) authentication logic here
                 // you may use createMode here to check if you create or you login
                 // also get all users list here
-                sock = new OSPSocket();
 
                 jobj.put("user", this.mEmail);
                 jobj.put("pass", this.mPassword);
@@ -255,9 +278,7 @@ public class LoginFragment extends Fragment {
                     jobj.put("create", true);
                 }
 
-                this.sock.writeString(jobj.toString());
-
-                response = this.sock.readAll();
+                response = mService.login(jobj.toString());
 
                 /* FIXME if error from server (response != 0) here program dies */
                 if (response == null) {
@@ -321,16 +342,17 @@ public class LoginFragment extends Fragment {
             throw new ClassCastException(activity.toString()
                     + " must implement OnFragmentInteractionListener");
         }
+        activity.bindService(new Intent(activity, CommService.class), mConnection, Context.BIND_AUTO_CREATE);
     }
 
     @Override
     public void onDetach() {
         super.onDetach();
+        getActivity().unbindService(mConnection);
         mListener = null;
     }
 
     public interface OnFragmentInteractionListener {
         void onLogin(List<User> allUsers);
     }
-
 }
