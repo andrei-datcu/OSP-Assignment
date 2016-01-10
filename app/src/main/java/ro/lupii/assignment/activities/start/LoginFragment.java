@@ -18,10 +18,15 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 import ro.lupii.assignment.R;
+import ro.lupii.assignment.data.OSPSocket;
 import ro.lupii.assignment.data.User;
 
 
@@ -70,6 +75,7 @@ public class LoginFragment extends Fragment {
         mUsernameView = (EditText) v.findViewById(R.id.username);
         mPasswordView = (EditText) v.findViewById(R.id.password);
         mConfirmPassword = (EditText) v.findViewById(R.id.confirm_password);
+
         final Button mEmailSignInButton = (Button) v.findViewById(R.id.email_sign_in_button);
         mEmailSignInButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -174,8 +180,35 @@ public class LoginFragment extends Fragment {
         }
     }
 
+    enum uri_states {STATE_USER, STATE_DOMAIN}
     private boolean isUsernameValid(String email) {
         //TODO(John): Replace this with your own logic
+        uri_states state = uri_states.STATE_USER;
+        char c;
+
+        for (int i=0; i < email.length(); i++) {
+            c = email.charAt(i);
+            switch (state) {
+                /* FIXME did you cover all cases?!*/
+                case STATE_USER:
+                    if (c == '@') {
+                        state = uri_states.STATE_DOMAIN;
+                        break;
+                    }
+                    if (!Character.isLetterOrDigit(c) && c != '.' && c != '-' && c != '_')
+                        return false;
+                    break;
+                case STATE_DOMAIN:
+                    if (!Character.isLetterOrDigit(c) && c!='.' && c != ':'/*IPV6*/) {
+                        return false;
+                    }
+                    break;
+            }
+        }
+
+        if (state != uri_states.STATE_DOMAIN)
+            return false;
+
         return true;
     }
 
@@ -220,6 +253,8 @@ public class LoginFragment extends Fragment {
         private List<User> users;
         private Exception e;
 
+        private OSPSocket sock=null;
+
         UserLoginTask(String email, String password) {
             mEmail = email;
             mPassword = password;
@@ -228,10 +263,52 @@ public class LoginFragment extends Fragment {
 
         @Override
         protected Boolean doInBackground(Void... params) {
+            JSONObject jobj = new JSONObject();
+            JSONArray usersArr;
+            String response="", rLine;
+
             try {
                 //TODO(John) authentication logic here
                 // you may use createMode here to check if you create or you login
                 // also get all users list here
+                sock = new OSPSocket();
+
+                jobj.put("user", this.mEmail);
+                jobj.put("pass", this.mPassword);
+
+                if (createMode) {
+                    jobj.put("create", true);
+                }
+
+                this.sock.writeString(jobj.toString());
+
+                response = this.sock.readAll();
+
+                /* FIXME if error from server (response != 0) here program dies */
+                if (response == null) {
+                    /* we're doomed */
+                    lastError = "No response from the server";
+                    return false;
+                }
+
+                jobj = new JSONObject(response);
+
+                /* FIXME if error from server (response != 0) here program dies */
+                if ((Integer)jobj.get("response") != 0) {
+                    lastError = (String)jobj.get("message");
+                    return false;
+                }
+
+                users = new ArrayList<User>();
+
+                /* everything ok! get user list */
+                usersArr = jobj.getJSONArray("users");
+                for (int i=0; i < usersArr.length(); i++) {
+                    if (this.mEmail.compareTo((String)usersArr.get(i)) == 0)
+                        continue;
+                    this.users.add(User.buildUser((String)usersArr.get(i)));
+                }
+
                 return true;
             } catch (Exception e) {
                 this.e = e;
