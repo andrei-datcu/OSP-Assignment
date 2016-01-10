@@ -3,10 +3,13 @@ package ro.lupii.assignment.data;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.j256.ormlite.dao.ForeignCollection;
 import com.j256.ormlite.dao.RuntimeExceptionDao;
 import com.j256.ormlite.field.DatabaseField;
+import com.j256.ormlite.field.ForeignCollectionField;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -19,7 +22,11 @@ public class User implements Parcelable{
     @DatabaseField(unique = true)
     private String username;
 
-    private Boolean favorite = true;
+    @DatabaseField
+    private Boolean favorite;
+
+    @ForeignCollectionField
+    private ForeignCollection<Message> messages;
 
     public int getId() {
         return id;
@@ -27,6 +34,11 @@ public class User implements Parcelable{
 
     public Boolean getFavorite() {
         return favorite;
+    }
+
+    public void setFavorite(boolean favorite) {
+        this.favorite = favorite;
+        dao.update(this);
     }
 
     public User() {
@@ -45,30 +57,13 @@ public class User implements Parcelable{
         else return queryResult.get(0);
     }
 
+    public ArrayList<Message> getAllMessages() {
+        return new ArrayList<Message>(Arrays.asList((Message[])messages.toArray()));
+    }
+
     private static RuntimeExceptionDao<User, Integer> dao;
     public static void setDao(RuntimeExceptionDao<User, Integer> dao) {
         User.dao = dao;
-    }
-
-    public void deleteFavorite() {
-        dao.delete(this);
-    }
-
-    public void makeFavorite() {
-        dao.create(this);
-    }
-
-    public static List<User> getAllFavorites() {
-        ArrayList<User> result = new ArrayList<>();
-
-        for (User u : dao)
-            result.add(u);
-
-        return result;
-    }
-
-    public static int totalFavoriteCount() {
-        return (int)dao.countOf();
     }
 
     @Override
