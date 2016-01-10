@@ -1,5 +1,5 @@
 #
-# generated on 2016/01/09 05:38:49
+# generated on 2016/01/10 06:55:42
 #
 # --table-start--
 dataClass=ro.lupii.assignment.data.User
@@ -12,6 +12,36 @@ generatedId=true
 # --field-start--
 fieldName=username
 unique=true
+# --field-end--
+# --field-start--
+fieldName=favorite
+# --field-end--
+# --field-start--
+fieldName=messages
+foreignCollection=true
+# --field-end--
+# --table-fields-end--
+# --table-end--
+#################################
+# --table-start--
+dataClass=ro.lupii.assignment.data.Message
+tableName=message
+# --table-fields-start--
+# --field-start--
+fieldName=id
+generatedId=true
+# --field-end--
+# --field-start--
+fieldName=user
+columnName=user_id
+foreign=true
+foreignAutoRefresh=true
+# --field-end--
+# --field-start--
+fieldName=message
+# --field-end--
+# --field-start--
+fieldName=iSaidIt
 # --field-end--
 # --table-fields-end--
 # --table-end--

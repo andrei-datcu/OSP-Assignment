@@ -5,6 +5,9 @@ import android.content.Intent;
 import android.os.Binder;
 import android.os.IBinder;
 
+import ro.lupii.assignment.activities.conversation.ConversationActivity;
+import ro.lupii.assignment.data.Message;
+
 public class CommService extends Service implements SocketThread.OnMessageArrivedListener {
     // Binder given to clients
     private final IBinder mBinder = new LocalBinder();
@@ -12,7 +15,12 @@ public class CommService extends Service implements SocketThread.OnMessageArrive
 
     @Override
     public void onMessageArrived(String message) {
-        //TODO (Andrei) message received logic here
+        //TODO (John) parse JSON here
+
+        Message m = null;
+        Intent i = new Intent(ConversationActivity.NEW_MESSAGE_ACTION);
+        i.putExtra(ConversationActivity.KEY_MESSAGE, m);
+        sendBroadcast(i);
     }
 
     /**

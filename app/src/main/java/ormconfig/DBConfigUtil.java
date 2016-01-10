@@ -15,6 +15,7 @@ public class DBConfigUtil extends OrmLiteConfigUtil {
 
     final public static Class<?> classes[] = new Class<?>[]{
             ro.lupii.assignment.data.User.class,
+            ro.lupii.assignment.data.Message.class,
     };
 
     public static void main(String[] args) throws Exception {

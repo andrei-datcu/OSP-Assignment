@@ -11,6 +11,7 @@ import android.widget.ListView;
 import java.util.ArrayList;
 
 import ro.lupii.assignment.R;
+import ro.lupii.assignment.activities.conversation.ConversationActivity;
 import ro.lupii.assignment.data.User;
 
 public class UserListActivity extends AppCompatActivity {
@@ -35,7 +36,9 @@ public class UserListActivity extends AppCompatActivity {
         mUserListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                //TODO(Andrei) launch message activity here
+                Intent i = new Intent(UserListActivity.this, ConversationActivity.class);
+                i.putExtra(ConversationActivity.KEY_USER, allUsers.get(position));
+                startActivity(i);
             }
         });
     }

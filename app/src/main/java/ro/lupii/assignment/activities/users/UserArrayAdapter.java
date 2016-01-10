@@ -37,10 +37,7 @@ public class UserArrayAdapter extends ArrayAdapter<User>{
             this.favoriteButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    if (favoriteButton.isChecked())
-                        user.u.makeFavorite();
-                    else
-                        user.u.deleteFavorite();
+                    user.u.setFavorite(favoriteButton.isChecked());
                 }
             });
             setUser(u);

@@ -6,6 +6,7 @@ import com.j256.ormlite.android.apptools.OpenHelperManager;
 import com.j256.ormlite.dao.RuntimeExceptionDao;
 
 
+import ro.lupii.assignment.data.Message;
 import ro.lupii.assignment.data.User;
 
 /**
@@ -24,6 +25,8 @@ public class DatabaseManager {
     private static void initModelClasses() {
         User.setDao((RuntimeExceptionDao<User, Integer>)
                 helper.getRuntimeExceptionDao(User.class));
+        Message.setDao((RuntimeExceptionDao<Message, Integer>)
+                helper.getRuntimeExceptionDao(Message.class));
     }
 
     private static void terminateModelClasses() {
