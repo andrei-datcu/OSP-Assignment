@@ -3,6 +3,7 @@ package ro.lupii.assignment.activities.start;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.Fragment;
 import android.content.Context;
 import android.os.AsyncTask;
@@ -48,7 +49,6 @@ public class LoginFragment extends Fragment {
     private EditText mConfirmPassword;
     private View mProgressView;
     private View mLoginFormView;
-    private TextView errorText;
 
     private final static String KEY_ERR_VISIBLE = "ERR_VISIBLE";
     private final static String KEY_PROGRESS_VISIBLE = "PROGRESS_VISIBLE";
@@ -109,11 +109,6 @@ public class LoginFragment extends Fragment {
 
         mLoginFormView = v.findViewById(R.id.login_form);
         mProgressView = v.findViewById(R.id.login_progress);
-        errorText = (TextView) v.findViewById(R.id.error_text);
-        if (lastError != null) {
-            errorText.setVisibility(View.VISIBLE);
-            errorText.setText(lastError);
-        }
 
         if (progressShowing)
             showProgress(true);
@@ -133,7 +128,6 @@ public class LoginFragment extends Fragment {
         // Reset errors.
         mUsernameView.setError(null);
         mPasswordView.setError(null);
-        errorText.setVisibility(View.GONE);
         lastError = null;
 
         // Store values at the time of the login attempt.
@@ -215,7 +209,6 @@ public class LoginFragment extends Fragment {
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putBoolean(KEY_ERR_VISIBLE, errorText.getVisibility() == View.VISIBLE);
         outState.putBoolean(KEY_PROGRESS_VISIBLE, mProgressView.getVisibility() == View.VISIBLE);
     }
 
@@ -287,16 +280,14 @@ public class LoginFragment extends Fragment {
                 /* FIXME if error from server (response != 0) here program dies */
                 if (response == null) {
                     /* we're doomed */
-                    lastError = "No response from the server";
-                    return false;
+                    throw new Exception("No response from the server");
                 }
 
                 jobj = new JSONObject(response);
 
                 /* FIXME if error from server (response != 0) here program dies */
                 if ((Integer)jobj.get("response") != 0) {
-                    lastError = (String)jobj.get("message");
-                    return false;
+                    throw new Exception((String)jobj.get("message"));
                 }
 
                 users = new ArrayList<User>();
@@ -308,7 +299,6 @@ public class LoginFragment extends Fragment {
                         continue;
                     this.users.add(User.buildUser((String)usersArr.get(i)));
                 }
-
                 return true;
             } catch (Exception e) {
                 this.e = e;
@@ -325,9 +315,12 @@ public class LoginFragment extends Fragment {
                 if (mListener != null)
                     mListener.onLogin(users);
             } else {
-                lastError = "Plm" + e.getLocalizedMessage();
-                errorText.setText(lastError);
-                errorText.setVisibility(View.VISIBLE);
+                lastError = e.getLocalizedMessage();
+                new AlertDialog.Builder(LoginFragment.this.getActivity())
+                        .setTitle("Error")
+                        .setMessage(lastError)
+                        .setCancelable(false)
+                        .setPositiveButton("Ok", null).show();
             }
         }
 

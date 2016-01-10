@@ -25,12 +25,6 @@
             android:layout_marginBottom="35dp"
             android:layout_height="wrap_content" />
 
-        <TextView
-            android:layout_width="match_parent"
-            android:visibility="gone"
-            android:id="@+id/error_text"
-            android:layout_height="wrap_content" />
-
         <EditText android:id="@+id/username" android:layout_width="match_parent"
             android:layout_height="wrap_content" android:hint="@string/prompt_user"
             android:maxLines="1"

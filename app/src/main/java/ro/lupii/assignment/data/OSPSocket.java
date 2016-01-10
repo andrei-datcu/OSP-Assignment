@@ -16,7 +16,7 @@ public class OSPSocket {
     static private final int port=4000;
 
     /* !!! Modify me !!! */
-    static private final String host="localhost";
+    static private final String host="10.0.2.1";
 
  //   private int port;
    // private String host;
