@@ -174,35 +174,17 @@ public class LoginFragment extends Fragment {
         }
     }
 
-    enum uri_states {STATE_USER, STATE_DOMAIN}
     private boolean isUsernameValid(String email) {
-        //TODO(John): Replace this with your own logic
-        uri_states state = uri_states.STATE_USER;
         char c;
 
         for (int i=0; i < email.length(); i++) {
             c = email.charAt(i);
-            switch (state) {
-                /* FIXME did you cover all cases?!*/
-                case STATE_USER:
-                    if (c == '@') {
-                        state = uri_states.STATE_DOMAIN;
-                        break;
-                    }
-                    if (!Character.isLetterOrDigit(c) && c != '.' && c != '-' && c != '_')
-                        return false;
-                    break;
-                case STATE_DOMAIN:
-                    if (!Character.isLetterOrDigit(c) && c!='.' && c != ':'/*IPV6*/) {
-                        return false;
-                    }
-                    break;
-            }
+            if (i ==0 && !Character.isLetter(c))
+                return false;
+
+            if (!Character.isLetterOrDigit(c) && c != '.' && c != '-' && c != '_')
+                return false;
         }
-
-        if (state != uri_states.STATE_DOMAIN)
-            return false;
-
         return true;
     }
 
