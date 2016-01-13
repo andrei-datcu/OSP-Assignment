@@ -3,11 +3,14 @@ package ro.lupii.assignment.data;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.j256.ormlite.dao.CloseableIterator;
 import com.j256.ormlite.dao.ForeignCollection;
 import com.j256.ormlite.dao.RuntimeExceptionDao;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.field.ForeignCollectionField;
 
+import java.lang.reflect.Array;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -25,7 +28,7 @@ public class User implements Parcelable{
     @DatabaseField
     private Boolean favorite;
 
-    @ForeignCollectionField
+    @ForeignCollectionField()
     private ForeignCollection<Message> messages;
 
     public int getId() {
@@ -48,6 +51,7 @@ public class User implements Parcelable{
     private User(String username) {
         this.username = username;
         this.favorite = false;
+        dao.create(this);
     }
 
     public static User buildUser(String username) {
@@ -58,7 +62,23 @@ public class User implements Parcelable{
     }
 
     public ArrayList<Message> getAllMessages() {
-        return new ArrayList<Message>(Arrays.asList((Message[])messages.toArray()));
+        dao.refresh(this);
+        if (messages == null) {
+            //dao.assignEmptyForeignCollection(this, "messages");
+            //dao.update(this);
+            return new ArrayList<Message>();
+        }
+        ArrayList<Message> result = new ArrayList<>();
+        CloseableIterator<Message> it = messages.closeableIterator();
+        while (it.hasNext()) {
+            result.add(it.next());
+        }
+        try {
+            it.close();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return result;
     }
 
     private static RuntimeExceptionDao<User, Integer> dao;

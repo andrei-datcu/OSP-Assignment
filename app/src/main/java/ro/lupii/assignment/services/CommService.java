@@ -31,8 +31,8 @@ public class CommService extends Service implements SocketThread.OnMessageArrive
             if (jsonObject.getInt("type") != 1)
                 return;
 
-            m = Message.buildMessage(jsonObject.getString("user"),
-                    User.buildUser(jsonObject.getString("message")), false/*not own message */);
+            m = Message.buildMessage(jsonObject.getString("message"),
+                    User.buildUser(jsonObject.getString("user")), false/*not own message */);
             i = new Intent(ConversationActivity.NEW_MESSAGE_ACTION);
             i.putExtra(ConversationActivity.KEY_MESSAGE, m);
             sendBroadcast(i);

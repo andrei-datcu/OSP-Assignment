@@ -31,6 +31,7 @@ public class DatabaseManager {
 
     private static void terminateModelClasses() {
         User.setDao(null);
+        Message.setDao(null);
     }
 
     public static void terminate() {

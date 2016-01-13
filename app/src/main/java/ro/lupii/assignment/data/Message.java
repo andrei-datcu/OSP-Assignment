@@ -13,7 +13,7 @@ public class Message implements Parcelable {
     @DatabaseField(generatedId = true)
     private int id;
 
-    @DatabaseField(foreign = true, foreignAutoRefresh = true, columnName = "user_id")
+    @DatabaseField(foreign = true)//, foreignAutoRefresh = true, columnName = "user_id", canBeNull = false)
     private User user;
 
     @DatabaseField
@@ -59,17 +59,18 @@ public class Message implements Parcelable {
         id = in.readInt();
         message = in.readString();
         iSaidIt = in.readByte() != 0;
+        user = in.readParcelable(User.class.getClassLoader());
     }
 
-    public static final Parcelable.Creator<User> CREATOR = new Parcelable.Creator<User>() {
+    public static final Parcelable.Creator<Message> CREATOR = new Parcelable.Creator<Message>() {
         @Override
-        public User createFromParcel(Parcel in) {
-            return new User(in);
+        public Message createFromParcel(Parcel in) {
+            return new Message(in);
         }
 
         @Override
-        public User[] newArray(int size) {
-            return new User[size];
+        public Message[] newArray(int size) {
+            return new Message[size];
         }
     };
 
@@ -83,5 +84,6 @@ public class Message implements Parcelable {
         dest.writeInt(id);
         dest.writeString(message);
         dest.writeByte((byte)(iSaidIt ? 1: 0));
+        dest.writeParcelable(getUser(), flags);
     }
 }

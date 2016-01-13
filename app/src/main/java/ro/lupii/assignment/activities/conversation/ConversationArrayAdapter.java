@@ -40,6 +40,7 @@ public class ConversationArrayAdapter extends ArrayAdapter<Message> {
     public View getView(int position, View convertView, ViewGroup parent) {
         final Message m = getItem(position);
 
+        convertView = null; //TODO(Andrei) figure out why this is needed - it should work without
         ViewInfo viewInfo = convertView == null ? new ViewInfo() : (ViewInfo) convertView.getTag();
 
         if (convertView == null || viewInfo.ownMessage != m.isOwnMessage()) {

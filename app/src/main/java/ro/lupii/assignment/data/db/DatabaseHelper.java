@@ -11,6 +11,7 @@ import com.j256.ormlite.table.TableUtils;
 import java.sql.SQLException;
 
 import ro.lupii.assignment.R;
+import ro.lupii.assignment.data.Message;
 import ro.lupii.assignment.data.User;
 
 /**
@@ -22,8 +23,8 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
      * Suggested Copy/Paste code. Everything from here to the done block.
      ************************************************/
 
-    private static final String DATABASE_NAME = "osp.db";
-    private static final int DATABASE_VERSION = 2;
+    private static final String DATABASE_NAME = "ospp.db";
+    private static final int DATABASE_VERSION = 7;
 
     public DatabaseHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION, R.raw.ormlite_config);
@@ -39,6 +40,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 
             // Create tables. This onCreate() method will be invoked only once of the application life time i.e. the first time when the application starts.
             TableUtils.createTable(connectionSource, User.class);
+            TableUtils.createTable(connectionSource, Message.class);
 
         } catch (SQLException e) {
             Log.e(DatabaseHelper.class.getName(), "Unable to create datbases", e);
@@ -55,6 +57,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
             // existing database etc.
 
             TableUtils.dropTable(connectionSource, User.class, true);
+            TableUtils.dropTable(connectionSource, Message.class, true);
             onCreate(sqliteDatabase, connectionSource);
 
         } catch (SQLException e) {
