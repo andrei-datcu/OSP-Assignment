@@ -9,8 +9,11 @@ import android.content.ServiceConnection;
 import android.os.IBinder;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.KeyEvent;
+import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
@@ -37,6 +40,7 @@ public class ConversationActivity extends AppCompatActivity {
 
     private ListView messageListView;
     private ImageView sendButton;
+    private EditText sendMessageEdit;
     private User u;
     private BroadcastReceiver receiver;
     private ConversationArrayAdapter listAdapter;
@@ -72,14 +76,13 @@ public class ConversationActivity extends AppCompatActivity {
         u = getIntent().getParcelableExtra(KEY_USER);
         bindService(new Intent(this, CommService.class), mConnection, Context.BIND_AUTO_CREATE);
 
-        final EditText sendMessageEdit = (EditText) findViewById(R.id.chat_edit_text);
+        sendMessageEdit = (EditText) findViewById(R.id.chat_edit_text);
         sendMessageEdit.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
                 if (actionId == EditorInfo.IME_ACTION_SEND) {
-                    InputMethodManager imm = (InputMethodManager)v.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+                    InputMethodManager imm = (InputMethodManager) v.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
                     imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
-                    Log.d("OSPPP", "Should send now...");
                     sendMessage(sendMessageEdit.getText().toString());
                     return true;
                 }
@@ -87,10 +90,38 @@ public class ConversationActivity extends AppCompatActivity {
             }
         });
 
+        sendMessageEdit.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                if (s.length() == 0)
+                    disableSendButton();
+                else
+                    enableSendButton();
+            }
+        });
+
         messages = u.getAllMessages();
         listAdapter = new ConversationArrayAdapter(this, R.id.message_list, messages, u.getUsername());
         messageListView.setAdapter(listAdapter);
+        messageListView.setSelection(messages.size() - 1);
         sendButton = (ImageView) findViewById(R.id.enter_chat);
+        enableSendButton();
+        sendButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                sendMessage(sendMessageEdit.getText().toString());
+            }
+        });
 
         IntentFilter filter = new IntentFilter();
         filter.addAction(NEW_MESSAGE_ACTION);
@@ -102,6 +133,7 @@ public class ConversationActivity extends AppCompatActivity {
                 if (m.getUser().getUsername().equals(u.getUsername())) {
                     messages.add(m);
                     listAdapter.notifyDataSetChanged();
+                    messageListView.setSelection(messages.size() - 1);
                 }
             }
         };
@@ -137,7 +169,17 @@ public class ConversationActivity extends AppCompatActivity {
         mService.sendMessage(jsonObj);
         messages.add(Message.buildMessage(message, u, true));
         listAdapter.notifyDataSetChanged();
+        sendMessageEdit.setText("");
+        disableSendButton();
+    }
+
+    private void disableSendButton() {
         sendButton.setImageResource(R.drawable.ic_chat_send);
         sendButton.setClickable(false);
+    }
+
+    private void enableSendButton() {
+        sendButton.setImageResource(R.drawable.ic_chat_send_active);
+        sendButton.setClickable(true);
     }
 }
