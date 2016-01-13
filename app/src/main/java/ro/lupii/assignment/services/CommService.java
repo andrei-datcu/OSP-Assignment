@@ -105,7 +105,7 @@ public class CommService extends Service implements SocketThread.OnMessageArrive
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, notificationIntent, 0);
         return new Notification.Builder(this).
                 setContentTitle(getString(R.string.new_message)).
-                setSmallIcon(R.drawable.notification_template_icon_bg).
+                setSmallIcon(R.drawable.ic_message).
                 setContentText(getString(R.string.from) + u.getUsername()).
                 setAutoCancel(true).
                 setContentIntent(pendingIntent).build();
