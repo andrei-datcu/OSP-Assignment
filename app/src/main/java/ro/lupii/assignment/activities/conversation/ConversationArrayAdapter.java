@@ -9,6 +9,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.ToggleButton;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 import ro.lupii.assignment.R;
@@ -27,6 +29,7 @@ public class ConversationArrayAdapter extends ArrayAdapter<Message> {
 
     private class ViewInfo {
         public TextView messageView;
+        public TextView dateView;
         public String message;
         public boolean ownMessage;
 
@@ -34,6 +37,18 @@ public class ConversationArrayAdapter extends ArrayAdapter<Message> {
             this.message = message;
             this.messageView.setText(message);
         }
+
+        void setDate(Date date) {
+            Date now = new Date();
+            SimpleDateFormat cmpFmt = new SimpleDateFormat("yyyyMMdd"), fmt = null;
+            if (cmpFmt.format(now).equals(cmpFmt.format(date))) {
+                // same day, show only hour
+                fmt = new SimpleDateFormat("HH:mm");
+            } else {
+                fmt  = new SimpleDateFormat("d MMM");
+            }
+            dateView.setText(fmt.format(date));
+        };
     }
 
     @Override
@@ -54,10 +69,12 @@ public class ConversationArrayAdapter extends ArrayAdapter<Message> {
             }
 
             viewInfo.messageView = (TextView) convertView.findViewById(R.id.message_text);
+            viewInfo.dateView = (TextView) convertView.findViewById(R.id.time_text);
             viewInfo.ownMessage = m.isOwnMessage();
             convertView.setTag(viewInfo);
         }
         viewInfo.setMessage(m.getMessage());
+        viewInfo.setDate(m.getDate());
         return convertView;
     }
 }

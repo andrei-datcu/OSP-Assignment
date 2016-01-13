@@ -6,6 +6,8 @@ import android.os.Parcelable;
 import com.j256.ormlite.dao.RuntimeExceptionDao;
 import com.j256.ormlite.field.DatabaseField;
 
+import java.util.Date;
+
 /**
  * Created by andrei on 1/10/16.
  */
@@ -22,14 +24,22 @@ public class Message implements Parcelable {
     @DatabaseField
     private boolean iSaidIt;
 
+    @DatabaseField
+    private Date date;
+
     public Message() {
         // Needed by ORMLITE
+    }
+
+    public Date getDate() {
+        return this.date;
     }
 
     private Message(String message, User user, boolean ownMessage) {
         this.message = message;
         this.user = user;
         this.iSaidIt = ownMessage;
+        this.date = new Date();
     }
 
     public static Message buildMessage(String message, User user, boolean ownMessage) {
@@ -60,6 +70,7 @@ public class Message implements Parcelable {
         message = in.readString();
         iSaidIt = in.readByte() != 0;
         user = in.readParcelable(User.class.getClassLoader());
+        date = (Date)in.readSerializable();
     }
 
     public static final Parcelable.Creator<Message> CREATOR = new Parcelable.Creator<Message>() {
@@ -85,5 +96,6 @@ public class Message implements Parcelable {
         dest.writeString(message);
         dest.writeByte((byte)(iSaidIt ? 1: 0));
         dest.writeParcelable(getUser(), flags);
+        dest.writeSerializable(date);
     }
 }
