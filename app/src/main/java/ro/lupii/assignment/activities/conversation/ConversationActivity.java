@@ -18,6 +18,8 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 
 import ro.lupii.assignment.R;
@@ -84,7 +86,11 @@ public class ConversationActivity extends AppCompatActivity {
         });
 
         messages = u.getAllMessages();
-        listAdapter = new ConversationArrayAdapter(this, R.id.message_list, messages, u.getUsername());
+        if (messages != null)
+            listAdapter = new ConversationArrayAdapter(this, R.id.message_list, messages, u.getUsername());
+        else
+            listAdapter = new ConversationArrayAdapter(this, R.id.message_list, u.getUsername());
+
         messageListView.setAdapter(listAdapter);
         sendButton = (ImageView) findViewById(R.id.enter_chat);
 
@@ -114,6 +120,7 @@ public class ConversationActivity extends AppCompatActivity {
     private void sendMessage(String message) {
         //TODO(John) send message logic here
         String jsonObj = null;
+
         mService.sendMessage(jsonObj);
         messages.add(Message.buildMessage(message, u, true));
         listAdapter.notifyDataSetChanged();

@@ -20,6 +20,12 @@ import ro.lupii.assignment.data.Message;
 public class ConversationArrayAdapter extends ArrayAdapter<Message> {
     private String username;
 
+
+    public ConversationArrayAdapter(Context context, int resource, String username) {
+        super(context,resource);
+        this.username = username;
+    }
+
     public ConversationArrayAdapter(Context context, int resource, List<Message> objects, String username) {
         super(context, resource, objects);
         this.username = username;

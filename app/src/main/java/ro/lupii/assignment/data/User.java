@@ -2,12 +2,14 @@ package ro.lupii.assignment.data;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.util.Log;
 
 import com.j256.ormlite.dao.ForeignCollection;
 import com.j256.ormlite.dao.RuntimeExceptionDao;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.field.ForeignCollectionField;
 
+import java.text.Normalizer;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -58,7 +60,10 @@ public class User implements Parcelable{
     }
 
     public ArrayList<Message> getAllMessages() {
-        return new ArrayList<Message>(Arrays.asList((Message[])messages.toArray()));
+        if (messages != null)
+            return new ArrayList<Message>(Arrays.asList((Message[])messages.toArray()));
+        else
+            return null;
     }
 
     private static RuntimeExceptionDao<User, Integer> dao;
