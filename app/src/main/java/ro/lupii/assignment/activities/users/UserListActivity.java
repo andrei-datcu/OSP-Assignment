@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.CheckBox;
 import android.widget.ListView;
 
 import java.util.ArrayList;
@@ -18,8 +19,9 @@ public class UserListActivity extends AppCompatActivity {
 
     public static final String KEY_USERLIST = "userlist";
 
-    ArrayList<User> allUsers;
+    ArrayList<User> allUsers, displayedUsers;
     ListView mUserListView;
+    UserArrayAdapter adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,8 +31,10 @@ public class UserListActivity extends AppCompatActivity {
 
         Intent i = getIntent();
         allUsers = i.getParcelableArrayListExtra(KEY_USERLIST);
+        displayedUsers = new ArrayList<>();
+        displayedUsers.addAll(allUsers);
 
-        UserArrayAdapter adapter = new UserArrayAdapter(this, R.id.user_list, allUsers);
+        adapter = new UserArrayAdapter(this, R.id.user_list, displayedUsers);
         mUserListView.setAdapter(adapter);
         mUserListView.setClickable(true);
         mUserListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -41,5 +45,14 @@ public class UserListActivity extends AppCompatActivity {
                 startActivity(i);
             }
         });
+    }
+
+    public void onChangeSelection(View v) {
+        displayedUsers.clear();
+        CheckBox cb = (CheckBox)v;
+        for (User u : allUsers)
+            if (cb.isChecked() && u.getFavorite() || !cb.isChecked())
+                displayedUsers.add(u);
+        adapter.notifyDataSetChanged();
     }
 }

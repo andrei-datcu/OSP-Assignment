@@ -8,6 +8,11 @@
     android:orientation="vertical"
     tools:context="ro.lupii.assignment.activities.users.UserListActivity">
 
+    <CheckBox
+        android:text="@string/show_favorite_only"
+        android:onClick="onChangeSelection"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
     <ListView
         android:layout_width="match_parent"
         android:id="@+id/user_list"
