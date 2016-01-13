@@ -18,6 +18,10 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 
 import ro.lupii.assignment.R;
@@ -113,7 +117,23 @@ public class ConversationActivity extends AppCompatActivity {
 
     private void sendMessage(String message) {
         //TODO(John) send message logic here
+        JSONObject jObj = new JSONObject();
+        JSONArray jArr = new JSONArray();
         String jsonObj = null;
+
+        try {
+            jArr.put(0, u.getUsername());
+            jObj.put("users", jArr);
+            jObj.put("message", message);
+            jsonObj = jObj.toString();
+
+            //TODO remove me
+            Log.d("OSP", jObj.toString(1));
+        } catch (JSONException e) {
+            Log.e("OSP", "failed to populate JSON");
+            return;
+        }
+
         mService.sendMessage(jsonObj);
         messages.add(Message.buildMessage(message, u, true));
         listAdapter.notifyDataSetChanged();

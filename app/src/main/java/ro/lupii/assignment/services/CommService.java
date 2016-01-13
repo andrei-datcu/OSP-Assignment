@@ -4,9 +4,15 @@ import android.app.Service;
 import android.content.Intent;
 import android.os.Binder;
 import android.os.IBinder;
+import android.os.Parcel;
+import android.util.Log;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import ro.lupii.assignment.activities.conversation.ConversationActivity;
 import ro.lupii.assignment.data.Message;
+import ro.lupii.assignment.data.User;
 
 public class CommService extends Service implements SocketThread.OnMessageArrivedListener {
     // Binder given to clients
@@ -16,11 +22,25 @@ public class CommService extends Service implements SocketThread.OnMessageArrive
     @Override
     public void onMessageArrived(String message) {
         //TODO (John) parse JSON here
-
+        JSONObject jsonObject;
         Message m = null;
-        Intent i = new Intent(ConversationActivity.NEW_MESSAGE_ACTION);
-        i.putExtra(ConversationActivity.KEY_MESSAGE, m);
-        sendBroadcast(i);
+        Intent i = null;
+
+        try {
+            jsonObject = new JSONObject(message);
+            if (jsonObject.getInt("type") != 1)
+                return;
+
+            m = Message.buildMessage(jsonObject.getString("user"),
+                    User.buildUser(jsonObject.getString("message")), false/*not own message */);
+            i = new Intent(ConversationActivity.NEW_MESSAGE_ACTION);
+            i.putExtra(ConversationActivity.KEY_MESSAGE, m);
+            sendBroadcast(i);
+        } catch (JSONException e) {
+            Log.e("OSP", "Failed to read JSON");
+            return;
+        }
+
     }
 
     /**
