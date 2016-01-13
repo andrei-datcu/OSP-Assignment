@@ -1,5 +1,7 @@
 package ro.lupii.assignment.data;
 
+import android.util.Log;
+
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -42,6 +44,7 @@ public class OSPSocket {
         this.br = new BufferedReader(iSR);
 
         bOS = new BufferedOutputStream(this.socket.getOutputStream());
+        this.pw = new PrintWriter(bOS);
 
     }
 
@@ -49,6 +52,12 @@ public class OSPSocket {
         /* FIXME more efficient please */
         char c;
         String res="";
+
+        if (this.br == null) {
+            Log.e("OSP", "Can't read!BufferedReader is null!");
+            return null;
+        }
+
         while ((c=(char)this.br.read()) !='\0')
             res += c;
 
@@ -56,6 +65,11 @@ public class OSPSocket {
     }
 
     public void writeString(String s) {
+        if (this.pw == null) {
+            Log.e("OSP", "Can't write!PrintWriter is null!");
+            return;
+        }
+
         this.pw.write(s+'\0');
         this.pw.flush();
     }
@@ -66,6 +80,10 @@ public class OSPSocket {
 
     public void close() throws IOException {
         this.socket.close();
+    }
+
+    public boolean isNull() {
+        return this.socket == null;
     }
 
 }
