@@ -1,5 +1,6 @@
 package ro.lupii.assignment.activities.conversation;
 
+import android.app.NotificationManager;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
@@ -37,6 +38,7 @@ public class ConversationActivity extends AppCompatActivity {
     final public static String KEY_USER = "user";
     final public static String KEY_MESSAGE = "message";
     final public static String NEW_MESSAGE_ACTION = "NEW_MESSAGE";
+    final public static String KEY_NOTIFICATION_ID = "notification_ID";
 
     private ListView messageListView;
     private ImageView sendButton;
@@ -47,6 +49,7 @@ public class ConversationActivity extends AppCompatActivity {
     private ArrayList<Message> messages;
     private boolean mBound = false;
     private CommService mService = null;
+    private NotificationManager mNotificationManager;
 
     /** Defines callbacks for service binding, passed to bindService() */
     private ServiceConnection mConnection = new ServiceConnection() {
@@ -71,6 +74,8 @@ public class ConversationActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_conversation);
+        mNotificationManager =
+                (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 
         messageListView = (ListView) findViewById(R.id.message_list);
         u = getIntent().getParcelableExtra(KEY_USER);
@@ -134,6 +139,7 @@ public class ConversationActivity extends AppCompatActivity {
                     messages.add(m);
                     listAdapter.notifyDataSetChanged();
                     messageListView.setSelection(messages.size() - 1);
+                    mNotificationManager.cancel(intent.getIntExtra(KEY_NOTIFICATION_ID, 0));
                 }
             }
         };

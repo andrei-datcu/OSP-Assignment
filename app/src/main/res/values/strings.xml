@@ -5,4 +5,6 @@
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="type_your_message">Enter message</string>
     <string name="show_favorite_only">Show only favorite users</string>
+    <string name="new_message">New message</string>
+    <string name="from">From: </string>
 </resources>
