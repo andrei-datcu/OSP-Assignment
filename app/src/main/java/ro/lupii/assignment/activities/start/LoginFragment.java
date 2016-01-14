@@ -316,7 +316,7 @@ public class LoginFragment extends Fragment {
 
             if (success) {
                 if (mListener != null)
-                    mListener.onLogin(users);
+                    mListener.onLogin(mEmail, users);
             } else {
                 lastError = e.getLocalizedMessage();
                 new AlertDialog.Builder(LoginFragment.this.getActivity())
@@ -353,6 +353,6 @@ public class LoginFragment extends Fragment {
     }
 
     public interface OnFragmentInteractionListener {
-        void onLogin(List<User> allUsers);
+        void onLogin(String myUsername, List<User> allUsers);
     }
 }

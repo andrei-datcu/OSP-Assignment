@@ -46,11 +46,12 @@ public class StartActivity extends AppCompatActivity implements
     }
 
     @Override
-    public void onLogin(List<User> allUsers) {
+    public void onLogin(String myUsername, List<User> allUsers) {
         Intent i = new Intent(this, UserListActivity.class);
         ArrayList<User> users = new ArrayList<>();
         users.addAll(allUsers);
         i.putParcelableArrayListExtra(UserListActivity.KEY_USERLIST, users);
+        i.putExtra(UserListActivity.KEY_USER, myUsername);
         startActivity(i);
     }
 }
