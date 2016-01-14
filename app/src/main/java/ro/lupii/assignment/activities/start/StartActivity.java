@@ -12,6 +12,7 @@ import java.util.List;
 import ro.lupii.assignment.R;
 import ro.lupii.assignment.data.User;
 import ro.lupii.assignment.activities.users.UserListActivity;
+import ro.lupii.assignment.services.CommService;
 
 public class StartActivity extends AppCompatActivity implements
         LoginFragment.OnFragmentInteractionListener {
@@ -21,16 +22,11 @@ public class StartActivity extends AppCompatActivity implements
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_start);
 
-        //TODO (Andrei) remove this shit
-        //ArrayList<User> users = new ArrayList<>();
-        //users.add(User.buildUser("andrei"));
-        //users.add(User.buildUser("john"));
-        //users.add(User.buildUser("marinela"));
-        //Intent i = new Intent(this, UserListActivity.class);
-        //i.putParcelableArrayListExtra(UserListActivity.KEY_USERLIST, users);
-        //startActivity(i);
-        //finish();
-        //shit ends here
+        if (CommService.isRunning) {
+            finish();
+            startActivity(new Intent(this, UserListActivity.class));
+            return;
+        }
 
         if (savedInstanceState == null) {
             showFragment(new LoginFragment(), true);
@@ -47,11 +43,12 @@ public class StartActivity extends AppCompatActivity implements
 
     @Override
     public void onLogin(String myUsername, List<User> allUsers) {
+        CommService.myUsername = myUsername;
         Intent i = new Intent(this, UserListActivity.class);
         ArrayList<User> users = new ArrayList<>();
         users.addAll(allUsers);
         i.putParcelableArrayListExtra(UserListActivity.KEY_USERLIST, users);
-        i.putExtra(UserListActivity.KEY_USER, myUsername);
         startActivity(i);
+        finish();
     }
 }

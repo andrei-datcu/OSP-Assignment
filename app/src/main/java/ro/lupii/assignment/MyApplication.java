@@ -17,6 +17,5 @@ public class MyApplication extends Application {
         // Initialize the singletons so their instances
         // are bound to the application process.
         DatabaseManager.init(this);
-        startService(new Intent(this, CommService.class));
     }
 }

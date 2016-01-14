@@ -75,6 +75,7 @@ public class LoginFragment extends Fragment {
             CommService.LocalBinder binder = (CommService.LocalBinder) service;
             mService = binder.getService();
             mBound = true;
+            mAuthTask.execute((Void) null);
         }
 
         @Override
@@ -195,8 +196,9 @@ public class LoginFragment extends Fragment {
             // Show a progress spinner, and kick off a background task to
             // perform the user login attempt.
             showProgress(true);
+            getActivity().startService(new Intent(getActivity(), CommService.class));
+            getActivity().bindService(new Intent(getActivity(), CommService.class), mConnection, Context.BIND_AUTO_CREATE);
             mAuthTask = new UserLoginTask(email, password);
-            mAuthTask.execute((Void) null);
         }
     }
 
@@ -314,10 +316,12 @@ public class LoginFragment extends Fragment {
             mAuthTask = null;
             showProgress(false);
 
+            getActivity().unbindService(mConnection);
             if (success) {
                 if (mListener != null)
                     mListener.onLogin(mEmail, users);
             } else {
+                getActivity().stopService(new Intent(getActivity(), CommService.class));
                 lastError = e.getLocalizedMessage();
                 new AlertDialog.Builder(LoginFragment.this.getActivity())
                         .setTitle("Error")
@@ -342,13 +346,11 @@ public class LoginFragment extends Fragment {
             throw new ClassCastException(activity.toString()
                     + " must implement OnFragmentInteractionListener");
         }
-        activity.bindService(new Intent(activity, CommService.class), mConnection, Context.BIND_AUTO_CREATE);
     }
 
     @Override
     public void onDetach() {
         super.onDetach();
-        getActivity().unbindService(mConnection);
         mListener = null;
     }
 

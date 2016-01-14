@@ -17,7 +17,9 @@ import java.util.ArrayList;
 
 import ro.lupii.assignment.R;
 import ro.lupii.assignment.activities.conversation.ConversationActivity;
+import ro.lupii.assignment.activities.start.StartActivity;
 import ro.lupii.assignment.data.User;
+import ro.lupii.assignment.services.CommService;
 
 public class UserListActivity extends AppCompatActivity {
 
@@ -52,7 +54,10 @@ public class UserListActivity extends AppCompatActivity {
         mUserListView = (ListView) findViewById(R.id.user_list);
 
         Intent i = getIntent();
-        allUsers = i.getParcelableArrayListExtra(KEY_USERLIST);
+        if (i.hasExtra(KEY_USERLIST))
+            allUsers = i.getParcelableArrayListExtra(KEY_USERLIST);
+        else
+            allUsers = User.getAllUsers();
         displayedUsers = new ArrayList<>();
         displayedUsers.addAll(allUsers);
 
@@ -68,11 +73,13 @@ public class UserListActivity extends AppCompatActivity {
             }
         });
 
-        usernameTextView.setText(i.getStringExtra(KEY_USER));
+        usernameTextView.setText(CommService.myUsername);
         logoutButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //TODO logout here
+                stopService(new Intent(UserListActivity.this, CommService.class));
+                startActivity(new Intent(UserListActivity.this, StartActivity.class));
+                finish();
             }
         });
     }

@@ -107,6 +107,12 @@ public class User implements Parcelable{
         favorite = in.readByte() != 0;
     }
 
+    public static ArrayList<User> getAllUsers() {
+        ArrayList<User> result = new ArrayList<>();
+        result.addAll(dao.queryForAll());
+        return result;
+    }
+
     public static final Creator<User> CREATOR = new Creator<User>() {
         @Override
         public User createFromParcel(Parcel in) {

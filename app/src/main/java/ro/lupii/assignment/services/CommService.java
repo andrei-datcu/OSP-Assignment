@@ -23,6 +23,8 @@ public class CommService extends Service implements SocketThread.OnMessageArrive
     private final IBinder mBinder = new LocalBinder();
     private SocketThread socketThread;
     private int notificationID = 100;
+    public static boolean isRunning = false;
+    public static String myUsername;
 
     @Override
     public void onMessageArrived(String message) {
@@ -75,12 +77,14 @@ public class CommService extends Service implements SocketThread.OnMessageArrive
     public void onCreate() {
         socketThread = new SocketThread(this);
         socketThread.start();
+        isRunning = true;
     }
 
     @Override
     public void onDestroy() {
-        socketThread.closeThread();
+        socketThread.closeThread(); //TODO check if this is necessary
         socketThread.interrupt();
+        isRunning = false;
     }
 
     public String login(String message) throws Exception {
