@@ -176,6 +176,7 @@ public class ConversationActivity extends AppCompatActivity {
         messages.add(Message.buildMessage(message, u, true));
         listAdapter.notifyDataSetChanged();
         sendMessageEdit.setText("");
+        messageListView.setSelection(messages.size() - 1);
         disableSendButton();
     }
 

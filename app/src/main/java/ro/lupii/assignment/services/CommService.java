@@ -8,7 +8,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Binder;
 import android.os.IBinder;
-import android.os.Parcel;
 import android.util.Log;
 
 import org.json.JSONException;
@@ -16,7 +15,6 @@ import org.json.JSONObject;
 
 import ro.lupii.assignment.R;
 import ro.lupii.assignment.activities.conversation.ConversationActivity;
-import ro.lupii.assignment.activities.conversation.ConversationArrayAdapter;
 import ro.lupii.assignment.data.Message;
 import ro.lupii.assignment.data.User;
 
@@ -100,7 +98,7 @@ public class CommService extends Service implements SocketThread.OnMessageArrive
     }
 
     private Notification buildNotification(User u) {
-        Intent notificationIntent = new Intent(this, ConversationArrayAdapter.class);
+        Intent notificationIntent = new Intent(this, ConversationActivity.class);
         notificationIntent.putExtra(ConversationActivity.KEY_USER, u);
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, notificationIntent, 0);
         return new Notification.Builder(this).
